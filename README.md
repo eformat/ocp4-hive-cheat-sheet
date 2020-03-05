@@ -185,6 +185,7 @@ Another handy ClusterDeployment annotation:
 
 Watch for errors in the cluster install pod
 ```
+export CLUSTER_NAME=hivec
 stern hivec
 ```
 
@@ -237,4 +238,11 @@ cd hive-sync-sets
 Apply them to our control cluster
 ```
 syncset-gen view hivec-sync-set --cluster-name=hivec --resources resources/ | oc apply -n hive -f-
+```
+
+Check applied to `hivec` cluster
+```
+# check chronyd machine config applied via sync set
+export KUBECONFIG=~/.kube/${CLUSTER_NAME}.kubeconfig
+oc get mc 50-examplecorp-chrony -o yaml
 ```
