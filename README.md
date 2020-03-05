@@ -154,6 +154,11 @@ kind: ClusterDeployment
 metadata:
   name: hivec
   namespace: hive
+  labels:
+    environment: "dev"
+  annotations:
+    hive.openshift.io/try-install-once: "true"
+    hive.openshift.io/try-uninstall-once: "false"  
 spec:
   baseDomain: hive.example.com
   clusterName: hivec
@@ -170,6 +175,12 @@ spec:
     sshPrivateKeySecretRef:
       name: hivec-ssh-key
 EOF
+```
+
+Another handy ClusterDeployment annotation:
+```
+  annotations:
+    hive.openshift.io/delete-after: "24h"
 ```
 
 Watch for errors in the cluster install pod
@@ -199,4 +210,31 @@ oc delete clusterdeployment hivec --wait=false
 
 ### Configure cluster using SyncSets
 
-(TBD)
+- https://github.com/openshift/hive/blob/master/docs/syncset.md
+
+The default syncSetReapplyInterval can be overridden by specifying a string duration within the hiveconfig such as
+```
+oc edit hiveconfig hive -n hive
+ syncSetReapplyInterval: "1h"
+```
+for a one hour reapply interval.
+
+Get the `syncset-gen` go binary
+```
+cd $GOPATH/src/github.com/matt-simons
+git clone https://github.com/eformat/syncset-gen
+cd syncset-gen
+make build
+```
+
+Some example SyncSets are here
+- https://github.com/eformat/hive-sync-sets
+
+```
+git clone https://github.com/eformat/hive-sync-sets
+cd hive-sync-sets
+```
+Apply them to our control cluster
+```
+syncset-gen view hivec-sync-set --cluster-name=hivec --resources resources/ | oc apply -n hive -f-
+```
