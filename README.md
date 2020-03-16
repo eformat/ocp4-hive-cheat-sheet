@@ -114,20 +114,12 @@ compute:
 - name: worker
   platform:
     aws:
-      rootVolume:
-        iops: 100
-        size: 22
-        type: gp2
       type: m5a.xlarge
   replicas: 3
 controlPlane:
   name: master
   platform:
     aws:
-      rootVolume:
-        iops: 100
-        size: 22
-        type: gp2
       type: m4.xlarge
 metadata:
   name: hivec
