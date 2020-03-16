@@ -108,6 +108,7 @@ oc create secret generic hivec-ssh-key --from-literal=ssh-privatekey=$(echo -n $
 
 Create install config (yes, the pull secret and ssh key duplicate - why ? dunno ? see docs)
 ```
+cat <<'EOF' > hive-install-config.yaml
 apiVersion: v1
 baseDomain: cluster.com
 compute:
@@ -136,6 +137,12 @@ platform:
     region: ap-southeast-2
 pullSecret: '{"auths":{"cloud.openshift.com" ... REDACTED'
 sshKey: 'ssh-rsa AAA ... REDACTED'
+EOF
+```
+
+Create secret
+```
+oc create secret generic hivec-install-config --from-file=install-config.yaml=./hive-install-config.yaml
 ```
 
 This will create the Cluster
