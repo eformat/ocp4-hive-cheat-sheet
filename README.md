@@ -78,9 +78,9 @@ cat <<EOF | oc apply -f -
 apiVersion: hive.openshift.io/v1
 kind: ClusterImageSet
 metadata:
-  name: ocp-release-4.3.3-x86-64
+  name: ocp-release-4.4.3-x86-64
 spec:
-  releaseImage: quay.io/openshift-release-dev/ocp-release:4.3.3-x86_64
+  releaseImage: quay.io/openshift-release-dev/ocp-release:4.4.3-x86_64
 EOF
 ```
 
@@ -108,7 +108,7 @@ oc create secret generic hivec-ssh-key --from-literal=ssh-privatekey=$(echo -n $
 
 Create install config (yes, the pull secret and ssh key duplicate - why ? dunno ? see docs)
 ```
-cat <<'EOF' > hive-install-config.yaml
+cat <<'EOF' > hivec-install-config.yaml
 apiVersion: v1
 baseDomain: cluster.com
 compute:
@@ -142,7 +142,7 @@ EOF
 
 Create secret
 ```
-oc create secret generic hivec-install-config --from-file=install-config.yaml=./hive-install-config.yaml
+oc create secret generic hivec-install-config --from-file=install-config.yaml=./hivec-install-config.yaml
 ```
 
 This will create the Cluster
@@ -168,7 +168,7 @@ spec:
       region: ap-southeast-2
   provisioning:
     imageSetRef:
-      name: ocp-release-4.3.3-x86-64
+      name: ocp-release-4.3.5-x86-64
     installConfigSecretRef:
       name: hivec-install-config
     sshPrivateKeySecretRef:
@@ -206,6 +206,11 @@ oc extract secret/$(oc get cd ${CLUSTER_NAME} -o jsonpath='{.spec.clusterMetadat
 Delete the cluster using Hive
 ```
 oc delete clusterdeployment hivec --wait=false
+```
+
+If delete gets stuck for any reason
+```
+ oc patch clusterdeployment hivec -n hive --type='json' -p='[{"op": "replace", "path": "/metadata/finalizers", "value":[]}]'
 ```
 
 ### Configure cluster using SyncSets
