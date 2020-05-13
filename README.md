@@ -242,6 +242,8 @@ cd hive-sync-sets
 Apply them to our control cluster
 ```
 syncset-gen view hivec-sync-set --cluster-name=hivec --resources resources/ | oc apply -n hive -f-
+# or if using selector
+syncset-gen view hivec-sync-set --selector=deployment=dev --resources resources/ | oc apply -n hive -f-
 ```
 
 Check applied to `hivec` cluster
